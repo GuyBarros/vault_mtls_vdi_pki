@@ -1,0 +1,27 @@
+# Copy to device-trust-vdi.vars.hcl and pass with:
+#   nomad job run -var-file=device-trust-vdi.vars.hcl device-trust-vdi.nomad.hcl
+
+vault_addr      = "https://<cluster>.<id>.z1.hashicorp.cloud:8200"
+vault_namespace = "admin"   # HCP Vault Dedicated; "" for the root namespace
+
+# If Vault's TLS cert is from a private CA, either paste it here...
+# vault_ca_pem = <<EOT
+# -----BEGIN CERTIFICATE-----
+# ...
+# -----END CERTIFICATE-----
+# EOT
+# ...or, in a throwaway lab only:
+# vault_tls_skip_verify = true
+
+# Must match the Terraform outputs (`terraform output nomad_job_vars`).
+vault_role        = "device-trust-vdi"
+pki_root_mount    = "pki-demo-root"
+pki_devices_mount = "pki-devices"
+pki_gateway_mount = "pki-gateway"
+kv_mount          = "kv-device-trust"
+
+# How devices reach the gateway. Put the Nomad client's IP in the cert too,
+# and map the hostname in /etc/hosts on the demo laptop.
+gateway_hostname = "vdi.demo.local"
+gateway_ip_sans  = "127.0.0.1,10.1.2.190,10.1.1.80,10.1.2.69,10.1.1.89,10.1.3.61,10.1.3.82"
+gateway_port     = 8443

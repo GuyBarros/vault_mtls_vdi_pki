@@ -1,0 +1,29 @@
+# Copy to terraform.tfvars and adjust.
+
+# How devices and the Nomad client reach Vault (HCP Vault Dedicated public URL).
+vault_public_addr = "https://<cluster>.<id>.z1.hashicorp.cloud:8200"
+
+# Namespace everything is created in. HCP Vault Dedicated: "admin".
+# Self-managed Vault without namespaces: "".
+vault_namespace = "admin"
+
+# --- Nomad <-> Vault workload identity -------------------------------------
+# If Nomad is NOT yet integrated with this Vault, leave create_nomad_jwt_auth
+# true and point Vault at Nomad's JWKS endpoint.
+create_nomad_jwt_auth = true
+nomad_jwks_url        = "https://nomad.example.com:4646/.well-known/jwks.json"
+# If Nomad's HTTPS cert comes from a private CA, paste that CA here
+# (or pass it with: -var "nomad_jwks_ca_pem=$(cat nomad-ca.pem)"):
+# nomad_jwks_ca_pem = <<-EOT
+#   -----BEGIN CERTIFICATE-----
+#   ...
+#   -----END CERTIFICATE-----
+# EOT
+
+# If Nomad IS already integrated (e.g. you ran `nomad setup vault`), set:
+# create_nomad_jwt_auth = false
+# nomad_jwt_auth_path   = "jwt-nomad"   # the existing mount
+
+# --- Identity naming ---------------------------------------------------------
+device_domain  = "devices.demo.local"
+gateway_domain = "vdi.demo.local"

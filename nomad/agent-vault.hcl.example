@@ -1,0 +1,28 @@
+# Nomad agent configuration for Vault workload identity (Nomad 1.7+).
+# Add to the agent config on servers AND clients, then restart the agents.
+# Skip this if your Nomad cluster is already integrated with Vault.
+
+vault {
+  enabled = true
+  address = "https://<cluster>.<id>.z1.hashicorp.cloud:8200"
+
+  # HCP Vault Dedicated: every Vault call from Nomad (JWT login, templates)
+  # happens in the admin namespace. Omit for the root namespace.
+  namespace = "admin"
+  # ca_file = "/etc/nomad.d/vault-ca.pem"
+
+  # Must match the Terraform variable nomad_jwt_auth_path (note the trailing slash).
+  jwt_auth_backend_path = "jwt-nomad/"
+
+  # Optional: the demo job declares its own `identity "vault_default"` blocks,
+  # but setting a default lets other jobs use Vault without them.
+  default_identity {
+    aud = ["vault.io"]
+    ttl = "1h"
+  }
+}
+
+# The demo uses bridge networking, which needs the CNI reference plugins on
+# every client (e.g. /opt/cni/bin) and:
+#   sysctl net.bridge.bridge-nf-call-iptables=1
+# See https://developer.hashicorp.com/nomad/docs/networking/cni
